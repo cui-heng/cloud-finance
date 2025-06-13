@@ -4,9 +4,9 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _a161f5de = () => interopDefault(import('../pages/mobile/index.vue' /* webpackChunkName: "pages/mobile/index" */))
-const _1321db22 = () => interopDefault(import('../pages/pc/index.vue' /* webpackChunkName: "pages/pc/index" */))
-const _b9ffcdd4 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
+const _787c9f31 = () => interopDefault(import('../pages/mobile/index.vue' /* webpackChunkName: "pages/mobile/index" */))
+const _831cf57c = () => interopDefault(import('../pages/pc/index.vue' /* webpackChunkName: "pages/pc/index" */))
+const _313da2f6 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
 
@@ -21,15 +21,15 @@ export const routerOptions = {
 
   routes: [{
     path: "/mobile",
-    component: _a161f5de,
+    component: _787c9f31,
     name: "mobile"
   }, {
     path: "/pc",
-    component: _1321db22,
+    component: _831cf57c,
     name: "pc"
   }, {
     path: "/",
-    component: _b9ffcdd4,
+    component: _313da2f6,
     name: "index"
   }],
 

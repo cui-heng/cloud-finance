@@ -6,15 +6,13 @@
           <img src="@/assets/images/img/4@2x.png" alt="">
         </div>
         <div class="tab_co">
-          <div v-on:mouseenter="onMouseEnter(index)" class="item_tab" :class="index === activeInd? 'active': ''" @click="chooseTab(index, item, 0)" v-for="(item, index) in tabArrs">{{ item }}</div>
+          <div @click="chooseTab(index, item.menuName, 0)" v-for="(item, index) in menus" v-on:mouseenter="onMouseEnter(index)" class="item_tab" :class="index === activeInd? 'active': ''" >{{ item.menuName }}</div>
           <div class="Industry_n" v-show="industryShow">
             <p v-for="item in secondListArr" @click="chooseTab(index, item, 1)">{{ item }}</p>
           </div>
           <div class="Industry_n about_sty" v-show="aboutMenu">
             <p v-for="item in aboutArr" @click="chooseTab(index, item, 2)">{{ item }}</p>
           </div>
-
-          
         </div>
       </div>
     </div>
@@ -237,13 +235,13 @@
 import dataListObj from './data.json'
 export default {
   async asyncData({ $axios }) {
-    try {
-      const res = await $axios.get('website/menus/getWebMenus')
-      console.log(res, '111')
-      return { menus: res.data || [] }
-    } catch (e) {
-      return { menus: [] }
-    }
+    // try {
+    //   const res = await $axios.get('website/menus/getWebMenus')
+    //   console.log(res, '111')
+    //   return { menus: res.data || [] }
+    // } catch (e) {
+    //   return { menus: [] }
+    // }
   },
   data() {
     return {
@@ -287,6 +285,22 @@ export default {
     }
   },
   methods: {
+    async fetchMenus() {
+      try {
+        // 使用 this.$axios 发送 POST 请求
+        const res = await this.$axios.get('website/menus/getWebMenus')
+        // 取出后端数据
+        this.menus = res.data || []
+        this.menus.unshift({
+          "menuCode": "sy",
+          "menuName": "首页",
+          "sonMenus": []
+        })
+      } catch (e) {
+        // 处理异常
+        this.$message && this.$message.error('请求菜单失败！')
+      }
+    },
     handleGood() {
       this.goodsNums = 633
     },
@@ -348,7 +362,7 @@ export default {
     }
   },
   mounted(){
-    
+    this.fetchMenus()
   }
 };
 </script>
