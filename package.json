@@ -1,0 +1,20 @@
+{
+  "name": "nuxt2-news-project",
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "element-ui": "^2.15.13",
+    "nuxt": "^2.15.8",
+    "vue": "^2.6.14",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "install": "^0.13.0",
+    "less": "^3.13.1",
+    "less-loader": "^7.3.0"
+  }
+}

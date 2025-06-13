@@ -1,0 +1,20 @@
+[
+  {
+    "name": "mobile",
+    "path": "/mobile",
+    "component": "/Users/cuijiuhe/Documents/Code/gpt/nuxt2-vue2-news-with-api/pages/mobile/index.vue",
+    "chunkName": "pages/mobile/index"
+  },
+  {
+    "name": "pc",
+    "path": "/pc",
+    "component": "/Users/cuijiuhe/Documents/Code/gpt/nuxt2-vue2-news-with-api/pages/pc/index.vue",
+    "chunkName": "pages/pc/index"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "/Users/cuijiuhe/Documents/Code/gpt/nuxt2-vue2-news-with-api/pages/index.vue",
+    "chunkName": "pages/index"
+  }
+]
