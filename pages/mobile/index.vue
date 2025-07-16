@@ -1,15 +1,17 @@
 <template>
   <div class="home-container">
     <el-carousel class="carousel" arrow="never">
-      <el-carousel-item v-for="(menu, index) in menus" :key="index">Hello Carousel</el-carousel-item>
+      <el-carousel-item v-for="banner in banners" :key="banner.id">
+        <OSSImage :src="banner.coverImg" :alt="banner.title" />
+      </el-carousel-item>
     </el-carousel>
     <div class="title">
       <h2>置顶文章</h2>
     </div>
     <section class="pin-section">
-      <div class="pin-item" v-for="(menu, index) in menus" :key="index">
-        <img class="pin-item-image" src alt />
-        <p class="pin-item-text">{{ menu.menuName }}</p>
+      <div class="pin-item" v-for="article in pinArticles" :key="article.id">
+        <OSSImage class="pin-item-image" :src="article.coverImg" :alt="article.title" />
+        <p class="pin-item-text">{{ article.title }}</p>
       </div>
     </section>
 
@@ -18,16 +20,16 @@
     </div>
     <section class="article-section">
       <ul class="article-list">
-        <li class="article-item" v-for="(menu, index) in menus" :key="index">
-          <img class="article-image" src alt />
+        <li class="article-item" v-for="article in hotArticles" :key="article.id">
+          <OSSImage class="article-image" :src="article.coverImg" :alt="article.title" />
           <div class="article-content">
-            <h3 class="article-title">文章标题</h3>
-            <p class="article-description">文章描述内容，简要介绍文章的主要内容。</p>
+            <h3 class="article-title">{{article.title}}</h3>
+            <p class="article-description">{{ htmlToText(article.content) }}</p>
             <div class="article-meta">
               <div class="article-tags">
-                <span>期待</span>
+                <span>{{ article.newsType }}</span>
               </div>
-              <span class="article-date">2024-01-01</span>
+              <span class="article-date">{{ article.createTime }}</span>
             </div>
           </div>
         </li>
@@ -37,93 +39,99 @@
 </template>
 
 <script>
+import { htmlToText } from "@/utils";
+import OSSImage from "./components/oss-image.vue";
 export default {
   async asyncData({ $axios }) {
     try {
-      const res = await $axios.get("/website/menus/getWebMenus");
-      if (res.code === 1) {
-        return { menus: res.data };
-      }
+      const result = await $axios.get("/website/news/selectNews", {
+        params: {
+          pageNum: 1,
+          pageSize: 20,
+        }
+      });
+      const allNews = result?.list || [];
+      return {
+        banners: allNews.slice(0, 3),
+        pinArticles: allNews.slice(3, 6),
+        hotArticles: allNews.slice(6),
+      };
     } catch (e) {
-      return { menus: [] };
+      return {
+        banners: [],
+        pinArticles: [],
+        hotArticles: [],
+      };
     }
   },
   data() {
     return {
-      menus: [
-        {
-          menuCode: "home",
-          menuName: "首页",
-          sonMenus: []
-        },
-        {
-          menuCode: "news",
-          menuName: "行业新闻",
-          sonMenus: []
-        },
-        {
-          menuCode: "finance",
-          menuName: "财经",
-          sonMenus: []
-        },
-        {
-          menuCode: "futures",
-          menuName: "期货",
-          sonMenus: []
-        },
-        {
-          menuCode: "technology",
-          menuName: "科技",
-          sonMenus: []
-        },
-        {
-          menuCode: "consumption",
-          menuName: "消费",
-          sonMenus: []
-        },
-        {
-          menuCode: "aboutUs",
-          menuName: "关于我们",
-          sonMenus: []
-        }
-      ]
+      banners: [],
+      pinArticles: [],
+      hotArticles: [],
     };
-  }
+  },
+  components: {
+    OSSImage
+  },
+  methods: {
+    htmlToText
+  },
 };
 </script>
 
 <style lang="less" scoped>
 .carousel {
-  width: 684px;
-  height: 312px;
-  margin: 14px auto;
-  border-radius: 12px;
+  width: rem(684);
+  height: rem(312);
+  margin: rem(14) auto;
+  border-radius: rem(12);
   overflow: hidden;
+
+  ::v-deep {
+    .el-carousel__container {
+      height: 100%;
+    }
+
+    .el-carousel__indicator {
+      padding: rem(22) rem(4);
+
+      &.is-active button {
+        width: rem(34);
+        background: #7D64FF;
+      }
+    }
+
+    .el-carousel__button {
+      width: rem(10);
+      height: rem(8);
+      border-radius: rem(4);
+    }
+  } 
 }
 
 .title {
   display: flex;
-  padding-inline: 32px;
+  padding-inline: rem(32);
   h2 {
     color: #242021;
-    font-size: 30px;
-    margin: 20px 0;
+    font-size: rem(30);
+    margin: rem(20) 0;
   }
 }
 
 .pin-section {
   display: flex;
-  column-gap: 20px;
+  column-gap: rem(20);
   overflow-x: auto;
-  margin: 0 32px;
+  margin: 0 rem(32);
 
   .pin-item {
     flex-shrink: 0;
     position: relative;
-    width: 266px;
-    height: 186px;
-    border-radius: 8px;
-    background-color: red;
+    width: rem(266);
+    height: rem(186);
+    border-radius: rem(8);
     overflow: hidden;
 
     .pin-item-image {
@@ -134,11 +142,11 @@ export default {
 
     .pin-item-text {
       position: absolute;
-      left: 20px;
-      right: 20px;
-      bottom: 10px;
-      font-size: 20px;
-      line-height: 20px;
+      left: rem(20);
+      right: rem(20);
+      bottom: rem(10);
+      font-size: rem(20);
+      line-height: rem(20);
       color: #fff;
       margin: 0;
       text-overflow: ellipsis;
@@ -149,7 +157,7 @@ export default {
 }
 
 .article-section {
-  margin: 0 32px;
+  margin: 0 rem(32);
 
   .article-list {
     list-style: none;
@@ -158,32 +166,38 @@ export default {
 
     .article-item {
       display: flex;
-      margin-bottom: 20px;
-      padding: 16px;
+      margin-bottom: rem(20);
+      padding: rem(16);
       background: #fff;
-      border-radius: 28px;
-      box-shadow: 0px 10px 30px 0px rgba(176, 180, 193, 0.3);
+      border-radius: rem(28);
+      box-shadow: rem(0) rem(10) rem(30) rem(0) rgba(176, 180, 193, 0.3);
 
       .article-image {
-        width: 212px;
-        height: 185px;
-        border-radius: 28px;
-        margin-right: 20px;
+        width: rem(212);
+        height: rem(185);
+        border-radius: rem(28);
+        margin-right: rem(20);
       }
 
       .article-content {
         flex: 1;
+        overflow: hidden;
 
         .article-title {
-          font-size: 30px;
+          font-size: rem(30);
           color: #242021;
-          margin: 24px 0 0;
+          margin: rem(24) 0 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .article-description {
-          font-size: 20px;
+          min-height: rem(40);
+          font-size: rem(20);
+          line-height: rem(30);
           color: #8a8a8a;
-          margin: 14px 0 0;
+          margin: rem(10) 0 0;
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
@@ -195,25 +209,25 @@ export default {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-top: 24px;
+          margin-top: rem(18);
 
           .article-tags {
             display: flex;
-            gap: 10px;
+            gap: rem(10);
 
             span {
-              padding: 8px 10px;
-              border-radius: 30px;
-              font-size: 18px;
+              padding: rem(8) rem(10);
+              border-radius: rem(30);
+              font-size: rem(18);
               color: #fff;
-              min-width: 100px;
+              min-width: rem(100);
               text-align: center;
               background: #0242AC;
             }
           }
 
           .article-date {
-            font-size: 20px;
+            font-size: rem(20);
             color: #999;
           }
         }

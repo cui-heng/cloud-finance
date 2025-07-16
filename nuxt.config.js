@@ -1,3 +1,5 @@
+import lessRem from './plugins/less-rem';
+
 export default {
   mode: 'universal',
   head: {
@@ -11,25 +13,25 @@ export default {
     '~/assets/css/global.css'
   ],
   plugins: ['~/plugins/element-ui.js', '~/plugins/axios.js'],
+  modules: ['@nuxtjs/svg-sprite'],
+  svgSprite: {
+    input: '~/assets/icons/'
+  },
+  env: {
+    API_URL: process.env.API_URL,
+    OSS_API_URL: process.env.OSS_API_URL,
+  },
   build: {
     transpile: [/^element-ui/],
-    postcss: {
-      plugins: {
-        'postcss-pxtorem': {
-          // remUnit: 75,
-          // remPrecision: 8,
-          rootValue: 75,
-          unitPrecision: 5,
-          propList: ['*'],
-          replace: true,
-          mediaQuery: false,
-          minPixelValue: 0,
-          exclude: /node_modules/i
+    loaders: {
+      less: {
+        lessOptions: {
+          plugins: [lessRem],
         }
       }
     }
   },
   globals: {
     id: 'app',
-  }
+  },
 }

@@ -3,3 +3,10 @@ html, body, #app, #__layout {
   height: 100%;
   overflow: hidden;
 }
+
+.icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -7%;
+}

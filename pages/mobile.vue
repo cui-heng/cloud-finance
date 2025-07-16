@@ -4,8 +4,8 @@
       <h1 class="header-logo">
         <img src="@/assets/images/mobile/logo.png" alt="拨云财经" />
       </h1>
-      <div class="header-action"  @click="showMenu = true">
-        1243
+      <div class="header-action" @click="showMenu = true">
+        <svg-icon name="menu" />
       </div>
     </header>
     <main class="main">
@@ -13,11 +13,32 @@
         <div class="aside-mask" @click="showMenu = false"></div>
         <nav class="aside-nav">
           <ul class="aside-menu">
-            <li v-for="menu of menus" :key="menu.key">
-              <nuxt-link class="aside-menu-item" :to="menu.route">{{ menu.label }}</nuxt-link>
-              <ul class="aside-menu-children" :hidden="menu.key !== activeKey" v-if="menu.children?.length">
-                <li v-for="subMenu of menu.children" :key="subMenu.key">
-                  <nuxt-link :to="subMenu.route">{{ subMenu.label }}</nuxt-link>
+            <li v-for="menu of menus" :key="menu.menuCode">
+              <div
+                class="aside-menu-item"
+                :class="{ 'aside-menu-item--active': activeKey === menu.menuCode }"
+                @click="toggleMenu(menu)"
+              >
+                <template v-if="menuRouteMap.get(menu.menuCode)">
+                  <nuxt-link :to="menuRouteMap.get(menu.menuCode)">{{ menu.menuName }}</nuxt-link>
+                </template>
+                <span v-else>{{ menu.menuName }}</span>
+                <svg-icon name="arrow-down" v-if="menu.sonMenus?.length" />
+              </div>
+              <ul
+                class="aside-menu-children"
+                :hidden="menu.menuCode !== activeKey"
+                v-if="menu.sonMenus?.length"
+              >
+                <li
+                  v-for="subMenu of menu.sonMenus"
+                  :key="subMenu.menuCode"
+                  @click="showMenu = false"
+                >
+                  <template v-if="menuRouteMap.get(subMenu.menuCode)">
+                    <nuxt-link :to="menuRouteMap.get(subMenu.menuCode)">{{ subMenu.menuName }}</nuxt-link>
+                  </template>
+                  <span v-else>{{ subMenu.menuName }}</span>
                 </li>
               </ul>
             </li>
@@ -29,8 +50,11 @@
     <footer class="footer">
       <nav class="footer-nav">
         <ul>
-          <li v-for="menu of menus" :key="menu.route">
-            <nuxt-link :to="menu.route">{{ menu.label }}</nuxt-link>
+          <li v-for="menu of menus" :key="menu.menuCode">
+            <template v-if="menuRouteMap.get(menu.menuCode)">
+              <nuxt-link :to="menuRouteMap.get(menu.menuCode)">{{ menu.menuName }}</nuxt-link>
+            </template>
+            <span v-else>{{ menu.menuName }}</span>
           </li>
         </ul>
       </nav>
@@ -44,78 +68,49 @@
 
 <script>
 export default {
-  // async asyncData({ $axios }) {
-  //   try {
-  //     const res = await $axios.get('/website/menus/getWebMenus')
-  //     if (res.code === 1) {
-  //       return { menus: res.data }
-  //     }
-  //   } catch (e) {
-  //     return { menus: [] }
-  //   }
-  // },
+  async asyncData({ $axios }) {
+    try {
+      const result = await $axios.get("/website/menus/getWebMenus");
+      return {
+        menus: [
+          {
+            menuCode: "home",
+            menuName: "首页",
+            sonMenus: []
+          },
+          ...result
+        ]
+      };
+    } catch (e) {
+      return {
+        menus: []
+      };
+    }
+  },
   data() {
     return {
       showMenu: false,
       activeKey: "home",
-      menus: [
-        {
-          key: "home",
-          label: "首页",
-          route: "/mobile"
-        },
-        {
-          key: "news",
-          label: "行业新闻",
-          route: "/mobile/news"
-        },
-        {
-          key: "finance",
-          label: "财经",
-          route: "/mobile/finance"
-        },
-        {
-          key: "futures",
-          label: "期货",
-          route: "/mobile/futures"
-        },
-        {
-          key: "technology",
-          label: "科技",
-          route: "/mobile/technology"
-        },
-        {
-          key: "consumption",
-          label: "消费",
-          route: "/mobile/consumption"
-        },
-        {
-          key: "about",
-          label: "关于我们",
-          route: "/mobile/about",
-          children: [
-            {
-              key: "about",
-              label: "联系我们",
-              route: "/mobile/contact"
-            },
-            {
-              key: "advertising",
-              label: "广告服务",
-              route: "/mobile/advertising"
-            },
-            {
-              key: "disclaimer",
-              label: "免责声明",
-              route: "/mobile/disclaimer"
-            }
-          ]
-        }
-      ]
+      menus: [],
+      menuRouteMap: new Map([
+        ["home", "/mobile"],
+        ["lxwm", "/mobile/contact"],
+        ["mzsm", "/mobile/disclaimer"],
+        ["ggfw", "/mobile/advertising"]
+      ])
     };
   },
   mounted() {
     import("amfe-flexible");
+  },
+  methods: {
+    toggleMenu(menu) {
+      this.activeKey = menu.menuCode;
+
+      if (!menu.sonMenus?.length) {
+        this.showMenu = false;
+      }
+    }
   }
 };
 </script>
@@ -124,21 +119,22 @@ export default {
 .mobile-container {
   width: 100%;
   height: 100%;
-  font-size: 28px;
-  background: #f0f0f0;
+  font-size: rem(32);
+  background: #fff;
   overflow: auto;
 }
 
 .header {
-  height: 100px;
+  height: rem(100);
   background: #fff;
   display: flex;
   align-items: center;
-  padding-inline: 44px;
+  justify-content: space-between;
+  padding-inline: rem(44);
 
   &-logo {
-    width: 276px;
-    height: 76px;
+    width: rem(276);
+    height: rem(76);
     margin: 0;
 
     img {
@@ -147,9 +143,12 @@ export default {
       display: block;
     }
   }
-}
 
-.main {
+  .icon {
+    width: rem(44);
+    height: rem(44);
+    color: #333;
+  }
 }
 
 .aside {
@@ -185,10 +184,10 @@ export default {
   &-nav {
     position: absolute;
     right: -100%;
-    width: 526px;
+    width: rem(526);
     height: 100%;
     background: #fff;
-    padding-top: 80px;
+    padding-top: rem(80);
     z-index: 11;
     transition: all 0.3s ease-in-out;
     ul {
@@ -204,53 +203,77 @@ export default {
 
   &-menu {
     &-item {
+      position: relative;
       display: block;
-      width: 392px;
-      height: 74px;
-      line-height: 74px;
+      width: rem(392);
+      height: rem(74);
+      line-height: rem(74);
       background: #ededed;
-      margin: 0 auto 32px;
+      margin: 0 auto rem(32);
       text-align: center;
-      font-size: 34px;
+      color: #454545;
+      font-size: rem(34);
+
+      .icon {
+        position: absolute;
+        top: 50%;
+        right: rem(42);
+        width: rem(28);
+        font-size: rem(28);
+        transform: translateY(-50%);
+        transform-origin: center;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      &--active {
+        background: #f8f8f8;
+        color: #0242ac;
+        border-left: rem(5) solid #0242ac;
+
+        .icon {
+          transform: translateY(-50%) rotate(180deg);
+        }
+      }
     }
 
     &-children {
       li {
         text-align: center;
-        margin-bottom: 36px;
+        margin-bottom: rem(36);
       }
 
       a {
-        font-size: 28px;
+        font-size: rem(28);
       }
     }
   }
 }
 
 .footer {
-  height: 237px;
+  height: rem(237);
   background: #3d3c44;
   display: flex;
   flex-direction: column;
   align-items: center;
 
   &-nav {
-    margin-top: 46px;
-    padding-inline: 20px;
-    padding-block: 22px;
-    border-bottom: 1px solid #fff;
+    margin-top: rem(46);
+    padding-inline: rem(20);
+    padding-block: rem(22);
+    border-bottom: rem(1) solid #fff;
 
     ul {
       display: flex;
       justify-content: center;
-      column-gap: 20px;
+      column-gap: rem(20);
       list-style: none;
       padding: 0;
       margin: 0;
 
-      a {
+      a,
+      span {
         color: #fff;
-        font-size: 26px;
+        font-size: rem(26);
         text-decoration: none;
       }
     }
@@ -261,12 +284,12 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    line-height: 40px;
+    line-height: rem(40);
     p {
       margin: 0;
       text-align: center;
       color: #fff;
-      font-size: 26px;
+      font-size: rem(26);
     }
   }
 }

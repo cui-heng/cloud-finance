@@ -1,19 +1,17 @@
 <template>
-  <div class="issue-container">
-    <section class="section">
-      <div class="issue-header">
-        <h2>请问现货黄金开户金开户收费吗?</h2>
-        <div class="issue-meta">
-          <span class="issue-date">2024-01-01</span>
-          <span class="issue-views">5467次浏览</span>
+  <div class="container">
+    <section class="article-section">
+      <div class="article-header">
+        <h2>{{ data.title }}</h2>
+        <div class="article-meta">
+          <span class="article-date">2024-01-01</span>
+          <span class="article-views">5467次浏览</span>
         </div>
       </div>
-      <div class="issue-content">
-        <p>现货黄金开户通常是免费的，但有些平台可能会收取一定的手续费或保证金。建议在开户前仔细阅读相关条款，了解所有可能的费用。</p>
-      </div>
-      <div class="issue-extra">
-        <div class="issue-qrcode"><img src="" alt=""></div>
-        <button class="issue-button">在线客服</button>
+      <div class="article-content" v-html="data.content"></div>
+      <div class="article-extra">
+        <div class="article-qrcode"><img src="" alt=""></div>
+        <button class="article-button">在线客服</button>
       </div>
     </section>
   </div>
@@ -23,28 +21,37 @@
 export default {
   async asyncData({ $axios }) {
     try {
-      const res = await $axios.get("/website/menus/getWebMenus");
-      if (res.code === 1) {
-        return { menus: res.data };
-      }
+      const result = await $axios.get("/website/news/selectNews", {
+        params: {
+          id: 12,
+        }
+      });
+      console.log("获取文章内容", result);
+      return {
+        data: result || {}
+      };
     } catch (e) {
-      return { menus: [] };
+      return {
+        data: {}
+      };
     }
   },
   data() {
-    return {};
+    return {
+      data: {}
+    };
   }
 };
 </script>
 
 <style lang="less" scoped>
-.section {
+.article-section {
   padding: 0 rem(40);
   background: #fff;
   border-radius: rem(16);
   box-shadow: rem(0) rem(1) rem(17) rem(1) rgba(8, 1, 3, 0.07);
   margin: rem(26);
-  .issue-header {
+  .article-header {
     padding: rem(44) rem(26);
     border-bottom: rem(1) solid #F8F8F8;
     h2 {
@@ -54,18 +61,18 @@ export default {
       margin: 0;
       line-height: rem(72);
     }
-    .issue-meta {
+    .article-meta {
       display: flex;
       justify-content: space-between;
       margin-top: rem(44);
       font-size: rem(24);
       color: #838383;
 
-      .issue-date {
+      .article-date {
         margin-right: rem(20);
       }
 
-      .issue-views {
+      .article-views {
         margin-left: rem(20);
       }
     }
@@ -84,7 +91,7 @@ export default {
     text-indent: 2em;
   }
 
-  .issue-qrcode {
+  .article-qrcode {
     width: rem(236);
     height: rem(236);
     padding: rem(14);
