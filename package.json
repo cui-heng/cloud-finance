@@ -1,24 +1,21 @@
 {
-  "name": "nuxt2-news-project",
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "nuxt --dotenv .env.development",
     "build": "nuxt build",
-    "start": "nuxt start"
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/svg-sprite": "^0.5.2",
-    "amfe-flexible": "^2.2.1",
-    "axios": "^0.27.2",
-    "element-ui": "^2.15.13",
-    "less": "^3.13.1",
-    "less-loader": "^7.3.0",
-    "normalize.css": "^8.0.1",
-    "nuxt": "^2.15.8",
-    "postcss-pxtorem": "^5.1.1",
-    "vue": "^2.6.14",
-    "vuex": "^3.6.2"
-  },
-  "devDependencies": {
-    "install": "^0.13.0"
+    "@element-plus/nuxt": "^1.1.4",
+    "element-plus": "^2.10.4",
+    "less": "^4.4.0",
+    "nuxt": "^4.0.0",
+    "nuxt-svgo": "^4.2.4",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
   }
 }
