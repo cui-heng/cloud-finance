@@ -21,16 +21,6 @@ const { data } = useRequest<Website.FetchListResponse<Website.Article>>('/websit
 
 <style lang="less" scoped>
 .container {
-  margin-bottom: 40px;
-
-  .breadcrumb {
-    margin-block: 6px;
-  }
-
-  .section {
-    margin-block: 16px;
-  }
-
-
+  margin: rem(40) rem(32);
 }
 </style>

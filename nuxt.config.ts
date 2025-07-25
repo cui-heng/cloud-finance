@@ -20,14 +20,19 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    apiUrl: '',
+    apiUrl: process.env.NUXT_API_URL,
     public: {
-      ossApiUrl: '',
+      ossApiUrl: process.env.NUXT_PUBLIC_OSS_API_URL,
     }
   },
   app: {
     rootAttrs: {
       id: 'app',
     }
+  },
+  router: {
+    options: {
+      scrollBehaviorType: "smooth"
+    },
   }
 })

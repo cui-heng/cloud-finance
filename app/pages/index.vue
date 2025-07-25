@@ -7,7 +7,7 @@
         </NuxtLink>
         <nav class="header-nav">
           <ul class="nav-menu">
-            <li class="nav-menu-item">
+            <li class="nav-menu-item" :class="{ 'nav-menu-item--active': isHomePage }">
               <NuxtLink to="/">首页</NuxtLink>
             </li>
             <li class="nav-menu-item" :class="{ 'nav-menu-item--active': activeKey === menu.menuCode }" v-for="menu of menus" :key="menu.menuCode">
@@ -37,7 +37,7 @@
         </nav>
       </div>
     </header>
-    <main class="main">
+    <main class="main" :class="{ 'main--full': isHomePage }">
       <NuxtPage />
     </main>
     <footer class="footer">
@@ -60,8 +60,14 @@
 </template>
 
 <script setup lang="ts">
-const activeKey = ref('home');
+definePageMeta({
+  middleware: ['device-redirect']
+});
+
+const route = useRoute();
 const { data: menus } = await useRequest<Website.Menu[]>("/website/menus/getWebMenus");
+
+const isHomePage = computed(() => route.path === '/');
 
 const menuRouteMap = new Map([
   ["lxwm", "/contact"],
@@ -76,6 +82,24 @@ const menuRouteMap = new Map([
   ["kj", "/technology"],
   ["xf", "/consume"]
 ]);
+
+const activeKey = computed(() => {
+  if (['/contact', '/disclaimer', '/advertising'].includes(route.path)) {
+    return 'gywm';
+  }
+  
+  if (/\/news\/.+/ig.test(route.path)) {
+    return 'hyxw';
+  }
+
+  for (const [key, value] of menuRouteMap.entries()) {
+    if (route.path.startsWith(value)) {
+      return key;
+    }
+  }
+
+  return 'home';
+});
 </script>
 
 <style lang="less" scoped>
@@ -122,6 +146,10 @@ const menuRouteMap = new Map([
       color: #fff;
       border-bottom: 2px solid transparent;
 
+      &--active {
+        border-bottom-color: #fff;
+      }
+
       &::after {
         content: "";
         display: block;
@@ -167,6 +195,10 @@ const menuRouteMap = new Map([
   width: 1200px;
   margin: 0 auto;
   min-height: 300px;
+
+  &--full {
+    width: 100%;
+  }
 }
 
 .footer {

@@ -1,23 +1,18 @@
 <template>
   <Card title="热门">
     <ul class="hot-article">
-      <li class="hot-article-item" v-for="(article, index) in 6" :key="index">
+      <li class="hot-article-item" v-for="(article, index) in items" :key="index">
         <span class="hot-article-item-no">{{ index + 1 }}</span>
-        <NuxtLink :to="`/article?id=${22}`">文章标题一</NuxtLink>
+        <NuxtLink :to="`/article?id=${article.id}`">{{ article.title }}</NuxtLink>
       </li>
     </ul>
   </Card>
 </template>
 
-<script>
-export default {
-  name: 'HotCard',
-  props: {
-    title: {
-      type: String
-    }
-  }
-};
+<script setup lang="ts">
+defineProps<{
+  items?: Website.Article[];
+}>();
 </script>
 
 <style lang="less" scoped>
@@ -62,8 +57,11 @@ export default {
     }
 
     a {
+      flex: 1;
       color: #273746;
-      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
     }
 
     &-no {

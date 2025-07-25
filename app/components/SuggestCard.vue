@@ -1,29 +1,11 @@
 <template>
   <Card title="推荐">
     <ul class="suggest-article">
-      <li>
-        <NuxtLink class="suggest-article-item" :to="`/article?id=${22}`">
-          <span class="suggest-article-time">2024-10-30</span>
+      <li v-for="(article, index) in items" :key="article.id">
+        <NuxtLink class="suggest-article-item" :to="`/article?id=${article.id}`">
+          <span class="suggest-article-time">{{ (article.updateTime || article.createTime).slice(0, 10) }}</span>
           <span class="suggest-article-title">
-            山东各地“精耕细作” 借力“5G+”体系促智能化升级
-          </span>
-          <SvgoArrowRight />
-        </NuxtLink>
-      </li>
-      <li>
-        <NuxtLink class="suggest-article-item" :to="`/article?id=${22}`">
-          <span class="suggest-article-time">2024-10-30</span>
-          <span class="suggest-article-title">
-            山东各地“精耕细作” 借力“5G+”体系促智能化升级
-          </span>
-          <SvgoArrowRight />
-        </NuxtLink>
-      </li>
-      <li>
-        <NuxtLink class="suggest-article-item" :to="`/article?id=${22}`">
-          <span class="suggest-article-time">2024-10-30</span>
-          <span class="suggest-article-title">
-            山东各地“精耕细作” 借力“5G+”体系促智能化升级
+            {{ article.title }}
           </span>
           <SvgoArrowRight />
         </NuxtLink>
@@ -32,15 +14,10 @@
   </Card>
 </template>
 
-<script>
-export default {
-  name: 'SuggestCard',
-  props: {
-    title: {
-      type: String
-    }
-  }
-};
+<script setup lang="ts">
+defineProps<{
+  items?: Website.Article[];
+}>();
 </script>
 
 <style lang="less" scoped>
@@ -48,7 +25,6 @@ export default {
   padding-inline: 20px;
   display: flex;
   flex-direction: column;
-  row-gap: 16px;
 
   li {
     &:last-child .suggest-article-item {

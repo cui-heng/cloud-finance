@@ -1,7 +1,7 @@
 <template>
   <div class="mobile-container">
     <header class="header">
-      <NuxtLink class="header-logo" to="/moblie">
+      <NuxtLink class="header-logo" to="/mobile">
         <img src="~/assets/images/mobile/logo.png" alt="拨云财经" />
       </NuxtLink>
       <div class="header-action" @click="showMenu = true">
@@ -105,9 +105,9 @@ const menuRouteMap = new Map([
 ]);
 
 function toggleMenu(menu: any) {
-  if (menu.sonMenus?.length) {
-    activeKey.value = activeKey.value === menu.menuCode ? '' : menu.menuCode;
-  } else {
+  activeKey.value = menu.menuCode;
+
+  if (!menu.sonMenus?.length) {
     showMenu.value = false;
   }
 }
@@ -118,7 +118,6 @@ function toggleMenu(menu: any) {
   width: 100%;
   height: 100%;
   font-size: rem(32);
-  overflow: auto;
 }
 
 .header {

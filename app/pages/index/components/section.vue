@@ -35,7 +35,7 @@ export default {
     line-height: 32px;
     padding-block: 24px;
 
-    :deep p {
+    :deep(p) {
       margin: 0;
     }
   }

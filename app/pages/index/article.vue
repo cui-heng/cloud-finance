@@ -4,13 +4,13 @@
     <div class="section-wrapper">
       <section class="section article">
         <div class="article-header">
-          <h2>{{ data?.title }}</h2>
+          <h2>{{ data?.articleInfo?.title }}</h2>
           <div class="article-meta">
-            <span class="article-date">更新时间：{{ data?.createTime }}</span>
-            <span class="article-views">{{ data?.browseNumber }}人浏览</span>
+            <span class="article-date">更新时间：{{ data?.articleInfo?.createTime }}</span>
+            <span class="article-views">{{ data?.articleInfo?.browseNumber }}人浏览</span>
           </div>
         </div>
-        <div class="article-content" v-html="data?.content"></div>
+        <div class="article-content" v-html="data?.articleInfo?.content"></div>
         <div class="article-extra">
           <div class="article-tips">
             声明：本站所有文章资源内容，如无特殊说明或标注，均为采集网络资源。如若本站内容侵犯了原著者的合法权益，可联系本站删除。
@@ -22,9 +22,9 @@
         </div>
       </section>
       <aside class="aside">
-        <HotCard />
-        <SuggestCard />
-        <RandomCard />
+        <HotCard :items="data?.hotArticles" />
+        <SuggestCard :items="data?.recommendArticles" />
+        <RandomCard :items="data?.randomArticles" />
       </aside>
     </div>
     
@@ -35,23 +35,53 @@
 import Breadcrumb from './components/breadcrumb.vue';
 
 const breadcrumbs = [
-  { label: "拨云财经", route: "/mobile" },
-  { label: "关于我们", route: "/mobile/contact" }
+  { label: "拨云财经", route: "/" },
+  { label: "关于我们", route: "/contact" }
 ];
 
 const route = useRoute();
-const nuxtApp = useNuxtApp();
+const { $request } = useNuxtApp();
 
-const { data } = await useRequest<Website.Article>('/website/news/getNewsDetail', {
-  params: {
-    id: route.query.id
-  }
+const articleId = computed(() => route.query.id);
+
+const { data } = useAsyncData(`article:${articleId.value}`, async () => {
+  const [hotArticle, recommendArticle, randomArticle, articleInfo] = await Promise.all([
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        hotFlag: true,
+      }
+    }),
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        recommendFlag: true,
+      }
+    }),
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        randomFlag: true,
+      }
+    }),
+    $request<Website.Article>('/website/news/getNewsDetail', {
+      params: {
+        id: articleId.value,
+      }
+    }),
+  ]);
+
+  return {
+    articleInfo,
+    hotArticles: hotArticle.list,
+    recommendArticles: recommendArticle.list,
+    randomArticles: randomArticle.list,
+  };
+}, {
+  watch: [articleId],
 });
 
 function handleArticleLike() {
-  nuxtApp.$request('/website/news/thumbsUpNews', {
+  $request('/website/news/thumbsUpNews', {
     method: 'POST',
-    body: { id: route.query.id },
+    body: { id: articleId.value },
   }).then(() => {
     ElMessage.success('点赞成功');
   });
@@ -75,7 +105,7 @@ function handleArticleLike() {
     background: #fff;
     padding-block: 28px;
     padding-inline: 42px;
-
+    align-self: flex-start;
 
     &-header {
       border-bottom: 1px solid #eee;

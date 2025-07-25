@@ -1,31 +1,17 @@
 <template>
   <Card title="随机">
     <ul class="random-article">
-      <li class="random-article-item">
-         <NuxtLink :to="`/article?id=${22}`">文章标题一</NuxtLink>
-      </li>
-      <li class="random-article-item">
-         <NuxtLink :to="`/article?id=${22}`">文章标题一</NuxtLink>
-      </li>
-      <li class="random-article-item">
-         <NuxtLink :to="`/article?id=${22}`">文章标题一</NuxtLink>
-      </li>
-      <li class="random-article-item">
-         <NuxtLink :to="`/article?id=${22}`">文章标题一</NuxtLink>
+      <li class="random-article-item" v-for="(article, index) in items" :key="article.id">
+        <NuxtLink :to="`/article?id=${article.id}`">{{ article.title }}</NuxtLink>
       </li>
     </ul>
   </Card>
 </template>
 
-<script>
-export default {
-  name: 'RandomCard',
-  props: {
-    title: {
-      type: String
-    }
-  }
-};
+<script setup lang="ts">
+defineProps<{
+  items?: Website.Article[];
+}>();
 </script>
 
 <style lang="less" scoped>
@@ -34,8 +20,10 @@ export default {
   display: flex;
   flex-direction: column;
   row-gap: 32px;
+
   &-item {
     position: relative;
+
     &::before {
       content: '';
       position: absolute;
@@ -47,6 +35,7 @@ export default {
       border-radius: 100%;
       background-color: #BBCFFF;
     }
+
     a {
       display: block;
       color: #273746;
@@ -57,5 +46,4 @@ export default {
     }
   }
 }
-  
 </style>

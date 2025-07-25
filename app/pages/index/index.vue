@@ -1,17 +1,20 @@
 <template>
   <div class="container">
-    <el-carousel class="banner" arrow="never" height="430px">
-      <el-carousel-item v-for="banner in banners" :key="banner.id">
-        <OSSImage class="banner-item" :src="banner.coverImg" :alt="banner.title" />
-      </el-carousel-item>
-    </el-carousel>
+    <div class="banner-wrapper">
+      <el-carousel class="banner" arrow="never" height="430px">
+        <el-carousel-item v-for="banner in data?.banners" :key="banner.id">
+          <OSSImage class="banner-item" :src="banner.img" :alt="banner.title" />
+        </el-carousel-item>
+      </el-carousel>
+    </div>
     <div class="main">
       <section class="article-section">
         <div class="article-list-horizontal">
-          <NuxtLink class="article-item" :to="`/article?id=${article.id}`" v-for="article in pinArticles" :key="article.id">
+          <NuxtLink class="article-item" :to="`/article?id=${article.id}`" v-for="article in article?.list?.slice(0, 3)"
+            :key="article.id">
             <div class="article-time" v-if="article.updateTime || article.createTime">
-              <span class="article-time-date">{{(article.updateTime || article.createTime).slice(5, 10)}}</span>
-              <span class="article-time-year">{{(article.updateTime || article.createTime).slice(0, 4)}}</span>
+              <span class="article-time-date">{{ (article.updateTime || article.createTime).slice(5, 10) }}</span>
+              <span class="article-time-year">{{ (article.updateTime || article.createTime).slice(0, 4) }}</span>
             </div>
             <div class="article-content">
               <h3 class="article-title">{{ article.title }}</h3>
@@ -25,12 +28,12 @@
             </div>
           </NuxtLink>
         </div>
-        <ArticleList :items="hotArticles" />
+        <ArticleList :items="article?.list?.slice(3)" :pagination="{ ...pagination, total: article?.total }" />
       </section>
       <aside class="aside">
-        <HotCard />
-        <SuggestCard />
-        <RandomCard />
+        <HotCard :items="data?.hotArticles" />
+        <SuggestCard :items="data?.recommendArticles" />
+        <RandomCard :items="data?.randomArticles" />
       </aside>
     </div>
   </div>
@@ -40,36 +43,70 @@
 import ArticleList from './components/article-list.vue';
 
 const route = useRoute();
-const pagination = {
-  page: route.query.page as any,
-  size: route.query.size as any,
-}
-const { data } = await useRequest<Website.FetchListResponse<Website.Article>>("/website/news/selectNews", {
-  params: {
-    pageNum: 1,
-    pageSize: 20,
-  }
+const { $request } = useNuxtApp();
+
+const pagination = computed(() => ({
+  page: Number(route.query.page) || 1,
+  size: Number(route.query.size) || 10,
+}));
+
+const { data } = useAsyncData('home', async () => {
+  const [banners, hotArticle, recommendArticle, randomArticle] = await Promise.all([
+    $request('/website/news/getBannerList'),
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        hotFlag: true,
+      }
+    }),
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        recommendFlag: true,
+      }
+    }),
+    $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+      params: {
+        randomFlag: true,
+      }
+    }),
+  ]);
+
+  return {
+    banners,
+    hotArticles: hotArticle.list,
+    recommendArticles: recommendArticle.list,
+    randomArticles: randomArticle.list,
+  };
 });
 
-const banners = data?.value?.list?.slice(0, 3) || [];
-const pinArticles = data?.value?.list?.slice(3, 6) || [];
-const hotArticles = data?.value?.list?.slice(6) || [];
+const { data: article } = useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+  params: pagination
+});
 </script>
 
 <style lang="less" scoped>
 .container {
-  .banner {
-    height: 430px;
-    margin: 0 auto 40px;
+  .banner-wrapper {
+    margin-bottom: 40px;
+    background: #010E1F;
     overflow: hidden;
 
-    &-item {
-      width: 100%;
+    .banner {
+      width: 1200px;
       height: 430px;
+      margin: 0 auto;
+      overflow: hidden;
+
+      &-item {
+        width: 100%;
+        height: 430px;
+      }
     }
   }
 
+
   .main {
+    width: 1200px;
+    margin: 0 auto;
     display: flex;
     column-gap: 22px;
   }
@@ -237,9 +274,11 @@ const hotArticles = data?.value?.list?.slice(6) || [];
 
 .aside-section {
   background: #fff;
+
   &-header {
     padding-block: 22px;
     border-bottom: 1px solid #E0E9F7;
+
     h3 {
       margin: 0;
       font-size: 20px;

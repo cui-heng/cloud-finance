@@ -31,10 +31,9 @@
     <el-pagination
       class="article-pagination"
       background
-      hide-on-single-page
-      :current-page="pagination?.page"
+      :default-current-page="pagination?.page"
       :page-size="pagination?.size"
-      :pager-count="12"
+      :pager-count="11"
       :total="pagination?.total"
       layout="prev, pager, next"
       @change="handlePaginationChange"

@@ -64,10 +64,11 @@ const { data } = await useRequest<Website.Article>('/website/news/getNewsDetail'
   }
 
   .article-content {
-    padding-block: 32px;
+    padding-block: rem(16);
     :deep(p) {
       font-size: rem(22);
       line-height: rem(30);
+      margin-block: rem(14);
     }
   }
 
