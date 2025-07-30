@@ -78,7 +78,7 @@ const { data } = useAsyncData('home', async () => {
   };
 });
 
-const { data: article } = useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
+const { data: article } = await useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
   params: pagination
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <section class="section">
-      <ArticleList :items="data?.list" />
+      <ArticleList :items="data?.data" />
     </section>
   </div>
 </template>
@@ -10,13 +10,12 @@
 import ArticleList from '../components/article-list.vue';
 
 const route = useRoute();
-const { data } = useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
-  params: {
-    newsType: route.params.code,
-    page: route.query.page,
-    size: route.query.size,
-  }
+const data = useLoadMore<Website.Article>('/website/news/selectNews', {
+  newsType: route.params.code,
+  page: route.query.page,
+  size: route.query.size,
 });
+
 </script>
 
 <style lang="less" scoped>

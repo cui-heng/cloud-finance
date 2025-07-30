@@ -18,7 +18,7 @@
     </section>
     <section class="article-section">
       <h2>热点资讯</h2>
-      <ArticleList :items="article?.list" />
+      <ArticleList :items="articleState?.data" />
     </section>
   </div>
 </template>
@@ -28,11 +28,6 @@ import ArticleList from './components/article-list.vue';
 
 const route = useRoute();
 const { $request } = useNuxtApp();
-
-const pagination = computed(() => ({
-  page: Number(route.query.page) || 1,
-  size: Number(route.query.size) || 10,
-}));
 
 const { data } = useAsyncData('home', async () => {
   const [banners, hotArticle] = await Promise.all([
@@ -50,8 +45,9 @@ const { data } = useAsyncData('home', async () => {
   };
 });
 
-const { data: article } = useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
-  params: pagination
+const articleState = useLoadMore<Website.Article>('/website/news/selectNews', {
+  page: Number(route.query.page) || 1,
+  size: Number(route.query.size) || 10,
 });
 </script>
 
@@ -69,6 +65,12 @@ const { data: article } = useRequest<Website.FetchListResponse<Website.Article>>
 
   :deep(.el-carousel__container) {
     height: 100%;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   :deep(.el-carousel__indicator) {

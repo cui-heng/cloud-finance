@@ -186,14 +186,9 @@ function toggleMenu(menu: any) {
     padding-top: rem(80);
     z-index: 11;
     transition: all 0.3s ease-in-out;
-    ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
-    }
     a {
+      display: block;
       color: #454545;
-      text-decoration: none;
     }
   }
 

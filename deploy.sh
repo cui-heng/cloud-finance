@@ -6,7 +6,7 @@ name="colud-finance-web"
 image_name=$name:$tag
 
 echo "Get the latest code"
-# git pull
+git pull
 
 # Build Docker image
 echo "Build docker image"

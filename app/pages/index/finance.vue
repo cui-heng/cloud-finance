@@ -10,17 +10,21 @@
 import ArticleList from './components/article-list.vue';
 
 const route = useRoute();
-const pagination = {
-  page: route.query.page as any,
-  size: route.query.size as any,
-}
+const requestParams = computed(() => ({
+  newsType: "cj",
+  page: Number(route.query.page) || 1,
+  size: Number(route.query.size) || 10,
+}));
 
 const { data } = useRequest<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
-  params: {
-    newsType: "cj",
-    ...pagination,
-  }
+  params: requestParams
 });
+
+const pagination = computed(() => ({
+  page: Number(route.query.page) || 1,
+  size: Number(route.query.size) || 10,
+  total: data?.value?.total || 0,
+}));
 </script>
 
 <style lang="less" scoped>

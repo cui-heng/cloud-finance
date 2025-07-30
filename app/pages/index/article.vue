@@ -44,7 +44,7 @@ const { $request } = useNuxtApp();
 
 const articleId = computed(() => route.query.id);
 
-const { data } = useAsyncData(`article:${articleId.value}`, async () => {
+const { data } = await useAsyncData(`article:${articleId.value}`, async () => {
   const [hotArticle, recommendArticle, randomArticle, articleInfo] = await Promise.all([
     $request<Website.FetchListResponse<Website.Article>>('/website/news/selectNews', {
       params: {

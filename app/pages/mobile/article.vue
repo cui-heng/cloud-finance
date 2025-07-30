@@ -12,10 +12,7 @@
         </div>
       </div>
       <div class="article-content" v-html="data?.content"></div>
-      <div class="article-extra">
-        <!-- <div class="article-qrcode"><img src="" alt=""></div>
-        <button class="article-button">在线客服</button> -->
-      </div>
+      <div class="article-extra"></div>
     </section>
   </div>
 </template>
